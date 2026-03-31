@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ហាងទូរស័ព្ទ យុវវ័យ - បច្ចេកវិទ្យាទំនើប</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&family=Battambang:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- React & Babel -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    * { font-family: 'Battambang', 'Space Grotesk', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body, html { background-color: #f4f4f5; color: #18181b; margin: 0; padding: 0; overflow-x: hidden; }
+    
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 24px); }
+    .mb-safe { margin-bottom: env(safe-area-inset-bottom); }
+    
+    /* Futuristic Animations */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    
+    @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    .animate-slide-in { animation: slideInRight 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    .animate-float { animation: float 6s ease-in-out infinite; }
+
+    /* Next-Gen Light Theme Glassmorphism */
+    .glass-panel { 
+      background: rgba(255, 255, 255, 0.7); 
+      backdrop-filter: blur(24px); 
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.8); 
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255,255,255,1); 
+    }
+    .glass-nav { 
+      background: rgba(255, 255, 255, 0.85); 
+      backdrop-filter: blur(30px); 
+      -webkit-backdrop-filter: blur(30px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8); 
+    }
+    .glass-pill {
+      background: rgba(255, 255, 255, 0.95); 
+      backdrop-filter: blur(25px); 
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid rgba(255,255,255,0.6);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    }
+    .text-gradient {
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .bg-gradient-future {
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+    }
+
+    /* Ambient Background Orbs */
+    .bg-orb-1 { position: fixed; top: -10%; left: -10%; width: 50vw; height: 50vw; border-radius: 50%; background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(255,255,255,0) 70%); filter: blur(40px); z-index: -1; pointer-events: none; }
+    .bg-orb-2 { position: fixed; bottom: -10%; right: -10%; width: 60vw; height: 60vw; border-radius: 50%; background: radial-gradient(circle, rgba(6,182,212,0.1) 0%, rgba(255,255,255,0) 70%); filter: blur(60px); z-index: -1; pointer-events: none; }
+
+    /* Custom CSS Smartphone Mockup (Light Theme) */
+    .phone-mockup {
+      background: linear-gradient(145deg, #ffffff, #f1f5f9);
+      border: 3px solid #e2e8f0;
+      border-radius: 16px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.02), 5px 5px 15px rgba(0,0,0,0.05);
+      position: relative;
+    }
+    .phone-notch {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 40%; height: 8px; background: #e2e8f0;
+      border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;
+    }
+
+    #loading-screen { position: fixed; inset: 0; background: #ffffff; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; transition: opacity 0.5s; }
+    .spinner { border: 3px solid rgba(79, 70, 229, 0.1); border-top: 3px solid #4f46e5; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+  
+  <div class="bg-orb-1"></div>
+  <div class="bg-orb-2"></div>
+
+  <div id="loading-screen">
+    <div class="spinner mb-6"></div>
+    <h2 class="text-2xl font-bold tracking-tighter text-zinc-900">ហាងទូរស័ព្ទ <span class="text-gradient">យុវវ័យ</span></h2>
+    <p class="text-[10px] font-bold text-slate-400 mt-2 tracking-[0.1em] uppercase animate-pulse">កំពុងរៀបចំប្រព័ន្ធ...</p>
+  </div>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useMemo, useEffect, memo } = React;
+
+    const Icons = {
+      Home: ({filled, size=24, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill={filled?"#4f46e5":"none"} stroke={filled?"#4f46e5":"currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+      Search: ({size=20, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>,
+      Bag: ({size=24, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>,
+      History: ({filled, size=24, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill={filled?"#4f46e5":"none"} stroke={filled?"#4f46e5":"currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>,
+      Heart: ({filled, size=22, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? "#ef4444" : "none"} stroke={filled?"#ef4444":"currentColor"} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>,
+      User: ({filled, size=24, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill={filled?"#4f46e5":"none"} stroke={filled?"#4f46e5":"currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+      Cpu: ({size=16, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>,
+      Camera: ({size=16, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>,
+      Battery: ({size=16, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="2" y="7" width="16" height="10" rx="2" ry="2"/><line x1="22" y1="11" x2="22" y2="13"/></svg>,
+      Plus: ({size=18, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+      Minus: ({size=18, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+      Close: ({size=24, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+      ChevronDown: ({size=24, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="6 9 12 15 18 9"/></svg>,
+      Back: ({size=24, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>,
+      QrCode: ({size=28, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
+      Card: ({size=28, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>,
+      Check: ({size=18, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="20 6 9 17 4 12"/></svg>,
+      ChevronRight: ({size=20, className=""}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="9 18 15 12 9 6"/></svg>,
+      Logo: ({size=28, className=""}) => (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+          <rect x="5" y="2" width="14" height="20" rx="4" ry="4"/><line x1="12" y1="18" x2="12.01" y2="18"/>
+        </svg>
+      )
+    };
+
+    const CATEGORIES = ["ទាំងអស់", "Apple", "Samsung", "Vivo", "Oppo", "Tecno"];
+
+    // 50 REAL PHONES (10 per Brand)
+    const RAW_PHONES = [
+      { b: "Apple", n: "iPhone 15 Pro Max", p: 1199, cpu: "A17 Pro", cam: "48MP Triple", bat: "4422mAh" },
+      { b: "Apple", n: "iPhone 15 Pro", p: 999, cpu: "A17 Pro", cam: "48MP Triple", bat: "3274mAh" },
+      { b: "Apple", n: "iPhone 15 Plus", p: 899, cpu: "A16 Bionic", cam: "48MP Dual", bat: "4383mAh" },
+      { b: "Apple", n: "iPhone 15", p: 799, cpu: "A16 Bionic", cam: "48MP Dual", bat: "3349mAh" },
+      { b: "Apple", n: "iPhone 14 Pro Max", p: 1099, cpu: "A16 Bionic", cam: "48MP Triple", bat: "4323mAh" },
+      { b: "Apple", n: "iPhone 14 Pro", p: 899, cpu: "A16 Bionic", cam: "48MP Triple", bat: "3200mAh" },
+      { b: "Apple", n: "iPhone 14", p: 699, cpu: "A15 Bionic", cam: "12MP Dual", bat: "3279mAh" },
+      { b: "Apple", n: "iPhone 13", p: 599, cpu: "A15 Bionic", cam: "12MP Dual", bat: "3240mAh" },
+      { b: "Apple", n: "iPhone 12", p: 499, cpu: "A14 Bionic", cam: "12MP Dual", bat: "2815mAh" },
+      { b: "Apple", n: "iPhone SE 2022", p: 429, cpu: "A15 Bionic", cam: "12MP Single", bat: "2018mAh" },
+      { b: "Samsung", n: "Galaxy S24 Ultra", p: 1299, cpu: "Snapdragon 8 Gen 3", cam: "200MP Quad", bat: "5000mAh" },
+      { b: "Samsung", n: "Galaxy S24+", p: 999, cpu: "Snapdragon 8 Gen 3", cam: "50MP Triple", bat: "4900mAh" },
+      { b: "Samsung", n: "Galaxy S24", p: 799, cpu: "Snapdragon 8 Gen 3", cam: "50MP Triple", bat: "4000mAh" },
+      { b: "Samsung", n: "Galaxy Z Fold 5", p: 1799, cpu: "Snapdragon 8 Gen 2", cam: "50MP Triple", bat: "4400mAh" },
+      { b: "Samsung", n: "Galaxy Z Flip 5", p: 999, cpu: "Snapdragon 8 Gen 2", cam: "12MP Dual", bat: "3700mAh" },
+      { b: "Samsung", n: "Galaxy S23 Ultra", p: 1199, cpu: "Snapdragon 8 Gen 2", cam: "200MP Quad", bat: "5000mAh" },
+      { b: "Samsung", n: "Galaxy A54", p: 449, cpu: "Exynos 1380", cam: "50MP Triple", bat: "5000mAh" },
+      { b: "Samsung", n: "Galaxy A34", p: 349, cpu: "Dimensity 1080", cam: "48MP Triple", bat: "5000mAh" },
+      { b: "Samsung", n: "Galaxy M14", p: 229, cpu: "Exynos 1330", cam: "50MP Triple", bat: "6000mAh" },
+      { b: "Samsung", n: "Galaxy F54", p: 379, cpu: "Exynos 1380", cam: "108MP Triple", bat: "6000mAh" },
+      { b: "Vivo", n: "X100 Pro", p: 1050, cpu: "Dimensity 9300", cam: "50MP Triple", bat: "5400mAh" },
+      { b: "Vivo", n: "X100", p: 850, cpu: "Dimensity 9300", cam: "50MP Triple", bat: "5000mAh" },
+      { b: "Vivo", n: "V30 Pro", p: 499, cpu: "Dimensity 8200", cam: "50MP Triple", bat: "5000mAh" },
+      { b: "Vivo", n: "V30", p: 399, cpu: "Snapdragon 7 Gen 3", cam: "50MP Dual", bat: "5000mAh" },
+      { b: "Vivo", n: "Y200e", p: 249, cpu: "Snapdragon 4 Gen 2", cam: "50MP Dual", bat: "5000mAh" },
+      { b: "Vivo", n: "Y100", p: 299, cpu: "Dimensity 900", cam: "64MP Triple", bat: "4500mAh" },
+      { b: "Vivo", n: "T2 Pro", p: 289, cpu: "Dimensity 7200", cam: "64MP Dual", bat: "4600mAh" },
+      { b: "Vivo", n: "T2x", p: 159, cpu: "Dimensity 6020", cam: "50MP Dual", bat: "5000mAh" },
+      { b: "Vivo", n: "X90 Pro", p: 950, cpu: "Dimensity 9200", cam: "50MP Triple", bat: "4870mAh" },
+      { b: "Vivo", n: "Y27", p: 199, cpu: "Dimensity 6020", cam: "50MP Dual", bat: "5000mAh" },
+      { b: "Oppo", n: "Find X7 Ultra", p: 1199, cpu: "Snapdragon 8 Gen 3", cam: "50MP Quad", bat: "5000mAh" },
+      { b: "Oppo", n: "Find X7", p: 899, cpu: "Dimensity 9300", cam: "50MP Triple", bat: "5000mAh" },
+      { b: "Oppo", n: "Reno 11 Pro", p: 599, cpu: "Dimensity 8200", cam: "50MP Triple", bat: "4600mAh" },
+      { b: "Oppo", n: "Reno 11", p: 450, cpu: "Dimensity 7050", cam: "50MP Triple", bat: "5000mAh" },
+      { b: "Oppo", n: "F25 Pro", p: 320, cpu: "Dimensity 7050", cam: "64MP Triple", bat: "5000mAh" },
+      { b: "Oppo", n: "A79", p: 240, cpu: "Dimensity 6020", cam: "50MP Dual", bat: "5000mAh" },
+      { b: "Oppo", n: "A59", p: 180, cpu: "Dimensity 6020", cam: "13MP Dual", bat: "5000mAh" },
+      { b: "Oppo", n: "Find N3 Flip", p: 999, cpu: "Dimensity 9200", cam: "50MP Triple", bat: "4300mAh" },
+      { b: "Oppo", n: "Find N3", p: 1699, cpu: "Snapdragon 8 Gen 2", cam: "48MP Triple", bat: "4805mAh" },
+      { b: "Oppo", n: "K11", p: 290, cpu: "Snapdragon 782G", cam: "50MP Triple", bat: "5000mAh" },
+      { b: "Tecno", n: "Phantom V Fold", p: 1099, cpu: "Dimensity 9000+", cam: "50MP Triple", bat: "5000mAh" },
+      { b: "Tecno", n: "Phantom V Flip", p: 599, cpu: "Dimensity 8050", cam: "64MP Dual", bat: "4000mAh" },
+      { b: "Tecno", n: "Camon 30 Premier", p: 450, cpu: "Dimensity 8200", cam: "50MP Triple", bat: "5000mAh" },
+      { b: "Tecno", n: "Camon 30 Pro", p: 350, cpu: "Dimensity 8200", cam: "50MP Triple", bat: "5000mAh" },
+      { b: "Tecno", n: "Spark 20 Pro+", p: 220, cpu: "Helio G99", cam: "108MP Dual", bat: "5000mAh" },
+      { b: "Tecno", n: "Spark 20", p: 150, cpu: "Helio G85", cam: "50MP Dual", bat: "5000mAh" },
+      { b: "Tecno", n: "Pova 6 Pro", p: 250, cpu: "Dimensity 6080", cam: "108MP Triple", bat: "6000mAh" },
+      { b: "Tecno", n: "Pova 6", p: 190, cpu: "Helio G99", cam: "50MP Dual", bat: "6000mAh" },
+      { b: "Tecno", n: "Pop 8", p: 99, cpu: "Unisoc T606", cam: "13MP Dual", bat: "5000mAh" },
+      { b: "Tecno", n: "Spark Go", p: 89, cpu: "Unisoc T606", cam: "13MP Single", bat: "5000mAh" }
+    ];
+
+    // ============================================================================
+    // BING GLOBAL CDN
+    // ============================================================================
+    const PHONES = RAW_PHONES.map((phone, i) => {
+      const serverNum = (i % 4) + 1;
+      const exactSearch = encodeURIComponent(`${phone.b} ${phone.n} smartphone official render white background`);
+      return {
+        id: i + 1,
+        name: phone.n,
+        brand: phone.b,
+        category: phone.b,
+        price: phone.p,
+        cpu: phone.cpu,
+        cam: phone.cam,
+        bat: phone.bat,
+        image: `https://tse${serverNum}.mm.bing.net/th?q=${exactSearch}&pid=Api&mkt=en-US&adlt=moderate&w=400&h=400`
+      };
+    });
+
+    const INITIAL_ORDERS = [
+      { id: 'ORD-9021', date: 'ថ្ងៃនេះ, 1:45 PM', brand: 'Apple', name: 'iPhone 15 Pro Max', items: 1, total: 1199.00, status: 'បានដឹកជញ្ជូន', brandObj: PHONES[0] },
+    ];
+
+    // ============================================================================
+    // SAFE IMAGE COMPONENT
+    // ============================================================================
+    const SafeImage = memo(({ src, name, className, imageClassName="" }) => {
+      const [error, setError] = useState(false);
+      const [loaded, setLoaded] = useState(false);
+
+      if (error) {
+        return (
+          <div className={`flex items-center justify-center ${className}`}>
+             <div className="wireframe-phone w-[60%] h-[80%] flex flex-col items-center justify-center">
+                <div className="wireframe-notch"></div>
+                <p className="text-slate-400 font-bold text-center text-[10px] leading-tight px-1 opacity-70">{name}</p>
+             </div>
+          </div>
+        );
+      }
+
+      return (
+        <div className={`flex items-center justify-center overflow-hidden relative ${className}`}>
+          {!loaded && (
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+               <div className="w-5 h-5 border-2 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
+            </div>
+          )}
+          <img 
+            src={src} alt={name} 
+            className={`w-full h-full object-contain mix-blend-multiply transition-all duration-700 ${loaded ? 'opacity-100 scale-100' : 'opacity-0 scale-90'} ${imageClassName}`} 
+            onLoad={() => setLoaded(true)}
+            onError={() => setError(true)} 
+            loading="lazy" 
+          />
+        </div>
+      );
+    });
+
+    // ============================================================================
+    // MAIN APP
+    // ============================================================================
+    function App() {
+      const [view, setView] = useState('home');
+      const [activeCat, setActiveCat] = useState('ទាំងអស់');
+      const [query, setQuery] = useState('');
+      const [cart, setCart] = useState([]);
+      const [favs, setFavs] = useState([1, 11, 21]); 
+      const [orders, setOrders] = useState(INITIAL_ORDERS);
+      const [selItem, setSelItem] = useState(null);
+      const [modalQty, setModalQty] = useState(1);
+      const [isCartOpen, setIsCartOpen] = useState(false);
+      const [isPayOpen, setIsPayOpen] = useState(false);
+      const [payStatus, setPayStatus] = useState('idle');
+
+      useEffect(() => {
+        const timer = setTimeout(() => {
+          const loader = document.getElementById('loading-screen');
+          if(loader) {
+             loader.style.opacity = '0';
+             setTimeout(() => loader.remove(), 500);
+          }
+        }, 600);
+        return () => clearTimeout(timer);
+      }, []);
+
+      const filtered = useMemo(() => {
+        let list = view === 'favorites' ? PHONES.filter(p => favs.includes(p.id)) : PHONES;
+        const catValue = activeCat === 'ទាំងអស់' ? 'All' : activeCat;
+        return list.filter(p => 
+            (catValue === 'All' || p.brand === catValue) && 
+            (p.name.toLowerCase().includes(query.toLowerCase()))
+        );
+      }, [view, activeCat, query, favs]);
+
+      const toggleFav = (id) => setFavs(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
+
+      // FIXED: Added missing addToCart function
+      const addToCart = (p, qty = 1) => {
+        setCart(prev => {
+          const has = prev.find(x => x.id === p.id);
+          if (has) return prev.map(x => x.id === p.id ? { ...x, qty: x.qty + qty } : x);
+          return [...prev, { ...p, qty }];
+        });
+      };
+
+      // FIXED: Added missing updateQty function
+      const updateQty = (id, delta) => setCart(prev => prev.map(x => x.id === id ? { ...x, qty: Math.max(0, x.qty + delta) } : x).filter(x => x.qty > 0));
+
+      const total = cart.reduce((a, b) => a + (b.price * b.qty), 0);
+
+      const processPayment = () => {
+        setPayStatus('processing');
+        setTimeout(() => {
+          setPayStatus('success');
+          const newOrder = {
+            id: `ORD-${Math.floor(Math.random() * 9000) + 1000}`,
+            date: 'ឥឡូវនេះ',
+            brand: cart[0]?.brand || 'ហាងទូរស័ព្ទ យុវវ័យ',
+            name: cart[0]?.name || 'Device',
+            items: cart.reduce((a, b) => a + b.qty, 0),
+            total: total,
+            status: 'កំពុងរៀបចំ',
+            brandObj: cart[0] || PHONES[0]
+          };
+          setOrders(prev => [newOrder, ...prev]);
+          setTimeout(() => { setCart([]); }, 500);
+        }, 2000);
+      };
+
+      return (
+        <div className="max-w-md mx-auto min-h-screen relative flex flex-col shadow-[0_0_60px_rgba(0,0,0,0.05)] bg-zinc-50 border-x border-zinc-200/50">
+          
+          {/* HEADER */}
+          <header className="sticky top-0 z-40 glass-nav px-5 h-16 flex items-center justify-between">
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => {setView('home'); setActiveCat('ទាំងអស់');}}>
+              <div className="text-zinc-900"><Icons.Logo /></div>
+              <div className="flex flex-col">
+                 <span className="font-black text-xl tracking-tight text-zinc-900 leading-none">ហាងទូរស័ព្ទ</span>
+                 <span className="text-gradient font-bold text-[10px] uppercase tracking-widest leading-none mt-1">យុវវ័យ</span>
+              </div>
+            </div>
+            <button onClick={() => setIsCartOpen(true)} className="relative p-2 text-zinc-600 hover:text-zinc-900 transition-colors active:scale-90">
+              <Icons.Bag />
+              {cart.length > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center ring-2 ring-white">{cart.reduce((a,b)=>a+b.qty,0)}</span>}
+            </button>
+          </header>
+
+          <main className="flex-1 px-5 pt-6 pb-28 overflow-y-auto hide-scrollbar relative z-10">
+            {view === 'home' && (
+              <div className="animate-fade">
+                
+                {/* Minimal Search */}
+                <div className="relative mb-6">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400"><Icons.Search /></div>
+                  <input type="text" placeholder="ស្វែងរកម៉ូដែល..." className="w-full pl-12 pr-4 py-3.5 bg-white rounded-2xl text-sm font-medium outline-none focus:ring-2 focus:ring-zinc-900/10 transition-all text-zinc-900 placeholder-zinc-400 border border-zinc-200/80 shadow-sm" value={query} onChange={e => setQuery(e.target.value)} />
+                </div>
+
+                {/* Pill Categories */}
+                <div className="flex gap-2 overflow-x-auto mb-8 hide-scrollbar -mx-5 px-5 pb-2">
+                  {CATEGORIES.map(c => (
+                    <button key={c} onClick={() => setActiveCat(c)} className={`flex-shrink-0 px-6 py-2.5 rounded-full transition-all text-xs font-bold border ${activeCat === c ? 'bg-zinc-900 text-white border-zinc-900 shadow-md' : 'bg-white border-zinc-200 text-zinc-600 hover:border-zinc-400 hover:text-zinc-900'}`}>{c}</button>
+                  ))}
+                </div>
+
+                <div className="flex items-end justify-between mb-4">
+                  <h3 className="font-black text-2xl text-zinc-900 tracking-tight">{activeCat === 'ទាំងអស់' ? 'ម៉ូដែលថ្មីៗ' : `ម៉ូដែល ${activeCat}`}</h3>
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{filtered.length} លទ្ធផល</span>
+                </div>
+
+                {/* Ultra-Clean Grid */}
+                <div className="grid grid-cols-2 gap-4">
+                  {filtered.map(p => (
+                    <div key={p.id} onClick={() => {setSelItem(p); setModalQty(1);}} className="bg-white rounded-[24px] p-2 premium-shadow border border-zinc-100 flex flex-col active:scale-[0.97] transition-all cursor-pointer group hover:border-zinc-300">
+                      
+                      <div className="relative w-full h-44 bg-zinc-50/50 rounded-[18px] overflow-hidden mb-2 transition-colors group-hover:bg-indigo-50/30">
+                         <SafeImage src={p.image} name={p.name} className="w-full h-full p-4" imageClassName="group-hover:scale-105 group-hover:-translate-y-1" />
+                         
+                         <button onClick={(e) => {e.stopPropagation(); toggleFav(p.id);}} className="absolute top-2 right-2 p-2 bg-white/50 backdrop-blur-md rounded-full shadow-sm text-zinc-400 active:scale-90 border border-slate-100 z-10 hover:text-red-500 transition-colors">
+                           <Icons.Heart filled={favs.includes(p.id)} />
+                         </button>
+                         <div className="absolute bottom-2 left-2 px-2 py-1 bg-white/80 backdrop-blur-md rounded-lg text-[9px] font-bold text-slate-600 uppercase tracking-widest shadow-sm">{p.brand}</div>
+                      </div>
+
+                      <div className="px-2 pb-2 flex-1 flex flex-col">
+                        <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-0.5">{p.brand}</p>
+                        <h4 className="font-extrabold text-[13px] text-zinc-900 line-clamp-2 mb-3 leading-snug tracking-tight">{p.name}</h4>
+                        <div className="mt-auto flex justify-between items-center">
+                          <span className="font-black text-base text-zinc-900">${p.price}</span>
+                          <button onClick={(e) => {e.stopPropagation(); addToCart(p, 1);}} className="w-7 h-7 bg-zinc-100 text-zinc-900 rounded-full flex items-center justify-center group-hover:bg-zinc-900 group-hover:text-white transition-colors">
+                            <Icons.Plus />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {filtered.length === 0 && (
+                  <div className="text-center py-20 bg-white rounded-3xl mt-4 border border-zinc-100 shadow-sm">
+                    <Icons.Search className="text-zinc-300 mx-auto w-12 h-12 mb-3" />
+                    <p className="font-bold text-zinc-500">រកមិនឃើញម៉ូដែលទេ</p>
+                    <button onClick={() => {setQuery(''); setActiveCat('ទាំងអស់');}} className="mt-4 text-indigo-600 text-xs font-bold uppercase tracking-widest bg-indigo-50 px-6 py-3 rounded-full hover:bg-indigo-100 transition-colors">សម្អាតការស្វែងរក</button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* FAVORITES VIEW */}
+            {view === 'favorites' && (
+              <div className="animate-fade">
+                <h2 className="text-3xl font-black text-zinc-900 mb-8 tracking-tight">ម៉ូដែលដែលបានរក្សាទុក</h2>
+                <div className="grid grid-cols-2 gap-4">
+                  {filtered.map(p => (
+                    <div key={p.id} onClick={() => {setSelItem(p); setModalQty(1);}} className="bg-white rounded-[24px] p-3 premium-shadow border border-zinc-100 flex flex-col items-center cursor-pointer active:scale-95 transition-transform hover:border-zinc-300">
+                      <SafeImage src={p.image} name={p.name} className="h-32 w-full rounded-[18px] mb-3 bg-zinc-50/50" p-2 />
+                      <p className="text-[9px] font-bold text-zinc-400 uppercase text-center mb-0.5 tracking-widest">{p.brand}</p>
+                      <h4 className="font-extrabold text-[12px] text-zinc-900 text-center mb-1 leading-tight">{p.name}</h4>
+                      <span className="font-black text-indigo-600 text-sm">${p.price}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ORDERS VIEW */}
+            {view === 'orders' && (
+              <div className="animate-fade">
+                <h2 className="text-3xl font-black text-zinc-900 mb-8 tracking-tight">ប្រវត្តិការទិញ</h2>
+                {orders.length === 0 ? (
+                  <div className="text-center py-20 bg-white rounded-[2rem] border border-zinc-100 shadow-sm"><p className="text-zinc-400 font-bold uppercase tracking-widest text-xs">មិនមានការបញ្ជាទិញថ្មីៗទេ</p></div>
+                ) : (
+                  <div className="space-y-4">
+                    {orders.map(o => (
+                      <div key={o.id} className="bg-white p-4 rounded-3xl premium-shadow border border-zinc-100 flex items-center gap-4 hover:border-zinc-300 transition-colors">
+                        <div className="w-16 h-16 rounded-2xl overflow-hidden bg-zinc-50 flex-shrink-0">
+                          <SafeImage src={o.brandObj?.image} name={o.name} className="w-full h-full p-2" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-extrabold text-sm text-zinc-900 mb-1 line-clamp-1">{o.name}</h4>
+                          <p className="text-[10px] text-zinc-500 font-medium mb-2">{o.date} • <span className="font-black text-zinc-900">${o.total.toFixed(2)}</span></p>
+                          <span className="text-[9px] font-bold uppercase px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600">{o.status}</span>
+                        </div>
+                        <div className="text-zinc-300"><Icons.ChevronRight /></div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* PROFILE VIEW */}
+            {view === 'profile' && (
+              <div className="animate-fade py-8 text-center">
+                <div className="w-28 h-28 bg-white text-indigo-600 rounded-[2rem] flex items-center justify-center mx-auto mb-5 premium-shadow border border-zinc-100">
+                  <Icons.User filled className="w-10 h-10" />
+                </div>
+                <h2 className="text-3xl font-black text-zinc-900 tracking-tight">ឈ្មោះអតិថិជន</h2>
+                <p className="text-xs font-bold text-zinc-500 mb-8 uppercase tracking-widest mt-1">សមាជិកពិសេស</p>
+                
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="bg-white p-5 rounded-3xl premium-shadow border border-zinc-100 text-center">
+                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1">ឧបករណ៍</p>
+                    <p className="text-3xl font-black text-zinc-900">{orders.length}</p>
+                  </div>
+                  <div className="bg-white p-5 rounded-3xl premium-shadow border border-zinc-100 text-center">
+                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1">ពិន្ទុ</p>
+                    <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-cyan-500">4,250</p>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-3xl overflow-hidden mb-8 text-left premium-shadow border border-zinc-100">
+                  {['ព័ត៌មានគណនី', 'អាសយដ្ឋានដឹកជញ្ជូន', 'ជម្រើសនៃការទូទាត់', 'សេវាកម្មអតិថិជន'].map((item, idx) => (
+                    <button key={item} className={`w-full p-5 flex items-center justify-between hover:bg-zinc-50 transition-colors ${idx !== 3 ? 'border-b border-zinc-100' : ''}`}>
+                      <span className="font-bold text-sm text-zinc-700">{item}</span> 
+                      <div className="text-zinc-400"><Icons.ChevronRight /></div>
+                    </button>
+                  ))}
+                </div>
+                <button className="w-full bg-red-50 text-red-600 font-bold py-4 rounded-full active:scale-95 transition-transform text-sm tracking-wide">ចាកចេញ</button>
+              </div>
+            )}
+          </main>
+
+          {/* iOS STYLE BOTTOM SHEET MODAL (PRODUCT DETAILS) */}
+          {selItem && (
+            <div className="fixed inset-0 z-50 flex flex-col justify-end">
+              <div className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm animate-fade" onClick={() => setSelItem(null)}></div>
+              
+              <div className="bg-white w-full h-[90vh] rounded-t-[2.5rem] shadow-2xl relative z-10 flex flex-col animate-sheet">
+                
+                <div className="absolute top-4 left-0 right-0 flex justify-center z-30 pointer-events-none">
+                   <div className="w-12 h-1.5 bg-zinc-200 rounded-full"></div>
+                </div>
+
+                <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-20">
+                  <button onClick={() => setSelItem(null)} className="p-3 bg-zinc-100 text-zinc-900 rounded-full active:scale-90 transition-transform"><Icons.ChevronDown /></button>
+                  <button onClick={() => toggleFav(selItem.id)} className="p-3 bg-zinc-100 rounded-full active:scale-90 transition-transform">
+                    <Icons.Heart filled={favs.includes(selItem.id)} />
+                  </button>
+                </div>
+                
+                <div className="h-[40vh] w-full flex-shrink-0 relative bg-zinc-50/50 flex items-center justify-center pt-12 pb-4">
+                   <SafeImage src={selItem.image} name={selItem.name} className="w-full h-full max-w-[320px] !bg-transparent" imageClassName="drop-shadow-2xl" />
+                </div>
+                
+                <div className="flex-1 p-6 lg:p-8 relative bg-white overflow-y-auto">
+                  <div className="flex justify-between items-end mb-6">
+                    <div>
+                      <p className="text-zinc-400 font-bold text-xs uppercase tracking-widest mb-1">{selItem.brand}</p>
+                      <h2 className="text-3xl font-black leading-tight text-zinc-900 tracking-tight">{selItem.name}</h2>
+                    </div>
+                    <span className="font-black text-3xl text-zinc-900">${selItem.price}</span>
+                  </div>
+                  
+                  <h4 className="font-bold text-[10px] text-zinc-400 mb-4 uppercase tracking-widest">លក្ខណៈបច្ចេកទេស</h4>
+                  
+                  <div className="grid grid-cols-1 gap-3 mb-24">
+                     <div className="bg-white p-4 rounded-2xl flex items-center gap-4 border border-zinc-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                        <div className="bg-zinc-50 p-3 rounded-xl text-zinc-900"><Icons.Cpu /></div>
+                        <div><p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest">បន្ទះឈីប</p><p className="text-sm font-extrabold text-zinc-900">{selItem.cpu}</p></div>
+                     </div>
+                     <div className="bg-white p-4 rounded-2xl flex items-center gap-4 border border-zinc-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                        <div className="bg-zinc-50 p-3 rounded-xl text-zinc-900"><Icons.Camera /></div>
+                        <div><p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest">កាមេរ៉ា</p><p className="text-sm font-extrabold text-zinc-900">{selItem.cam}</p></div>
+                     </div>
+                     <div className="bg-white p-4 rounded-2xl flex items-center gap-4 border border-zinc-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                        <div className="bg-zinc-50 p-3 rounded-xl text-zinc-900"><Icons.Battery /></div>
+                        <div><p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest">ថាមពលថ្ម</p><p className="text-sm font-extrabold text-zinc-900">{selItem.bat}</p></div>
+                     </div>
+                  </div>
+                </div>
+
+                {/* Fixed Bottom Action Bar */}
+                <div className="absolute bottom-0 left-0 right-0 p-5 bg-white/90 backdrop-blur-xl border-t border-zinc-100 pb-safe z-30">
+                  <div className="flex items-center gap-3 max-w-md mx-auto">
+                    <div className="flex items-center bg-zinc-50 rounded-full p-1.5 border border-zinc-100">
+                      <button onClick={() => setModalQty(Math.max(1, modalQty - 1))} className="w-10 h-10 flex items-center justify-center text-zinc-500 active:scale-90 bg-white rounded-full shadow-sm"><Icons.Minus /></button>
+                      <span className="w-10 text-center font-black text-base text-zinc-900">{modalQty}</span>
+                      <button onClick={() => setModalQty(modalQty + 1)} className="w-10 h-10 flex items-center justify-center text-zinc-900 active:scale-90 bg-white rounded-full shadow-sm"><Icons.Plus /></button>
+                    </div>
+                    <button onClick={() => {addToCart(selItem, modalQty); setSelItem(null); setIsCartOpen(true);}} className="flex-1 bg-zinc-900 text-white font-bold py-4 rounded-full active:scale-95 transition-transform text-sm tracking-wide shadow-xl hover:bg-indigo-600">
+                      បន្ថែមចូលកន្ត្រក
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* CART SIDE DRAWER */}
+          {isCartOpen && (
+            <div className="fixed inset-0 z-50 flex">
+              <div className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm animate-fade" onClick={() => setIsCartOpen(false)}></div>
+              <div className="ml-auto w-full max-w-[340px] bg-white h-full relative z-10 flex flex-col shadow-2xl animate-drawer border-l border-zinc-200">
+                <div className="px-6 py-6 border-b border-zinc-100 flex items-center justify-between bg-white/80 backdrop-blur-md z-20">
+                  <h3 className="text-xl font-black text-zinc-900 tracking-tight flex items-center gap-2">កន្ត្រករបស់អ្នក</h3>
+                  <button onClick={() => setIsCartOpen(false)} className="p-2 text-zinc-400 hover:text-zinc-900 bg-zinc-50 rounded-full transition-colors"><Icons.Close /></button>
+                </div>
+                
+                <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-zinc-50/50">
+                  {cart.map((item, i) => (
+                    <div key={i} className="bg-white p-3 rounded-[1.5rem] flex gap-4 premium-shadow border border-zinc-100">
+                      <div className="w-20 h-20 bg-zinc-50 rounded-2xl flex-shrink-0 overflow-hidden">
+                         <SafeImage src={item.image} name={item.name} className="w-full h-full p-2" />
+                      </div>
+                      <div className="flex-1 flex flex-col justify-center">
+                        <h4 className="font-extrabold text-[13px] text-zinc-900 leading-tight mb-1">{item.name}</h4>
+                        <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest mb-2">{item.brand}</p>
+                        <div className="flex items-center justify-between mt-auto">
+                          <span className="font-black text-sm text-indigo-600">${(item.price * item.qty).toFixed(2)}</span>
+                          <div className="flex items-center bg-zinc-50 p-1 rounded-full border border-zinc-100">
+                            <button onClick={() => updateQty(item.id, -1)} className="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center active:scale-90 text-zinc-500"><Icons.Minus /></button>
+                            <span className="w-6 text-center text-xs font-black text-zinc-900">{item.qty}</span>
+                            <button onClick={() => updateQty(item.id, 1)} className="w-6 h-6 rounded-full bg-white shadow-sm text-zinc-900 flex items-center justify-center active:scale-90"><Icons.Plus /></button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {cart.length === 0 && (
+                    <div className="h-full flex flex-col items-center justify-center text-center">
+                      <div className="w-20 h-20 bg-zinc-100 rounded-full flex items-center justify-center mb-4 text-zinc-300"><Icons.Bag /></div>
+                      <p className="font-bold uppercase tracking-widest text-[10px] text-zinc-400">កន្ត្រកទទេ</p>
+                    </div>
+                  )}
+                </div>
+
+                {cart.length > 0 && (
+                  <div className="p-6 bg-white border-t border-zinc-100 shadow-[0_-10px_30px_rgba(0,0,0,0.03)] pb-safe z-20">
+                    <div className="flex justify-between font-black text-zinc-900 mb-6 items-end">
+                       <span className="text-xs text-zinc-400 uppercase tracking-widest">សរុបទឹកប្រាក់</span>
+                       <span className="text-3xl tracking-tight">${total.toFixed(2)}</span>
+                    </div>
+                    <button onClick={() => {setIsPayOpen(true); setIsCartOpen(false);}} className="w-full bg-zinc-900 text-white font-bold py-4 rounded-full shadow-xl active:scale-95 transition-transform text-sm tracking-wide">បន្តទៅការទូទាត់</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* PAYMENT MODAL */}
+          {isPayOpen && (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+              <div className="absolute inset-0 bg-zinc-900/60 backdrop-blur-md" onClick={() => setIsPayOpen(false)}></div>
+              <div className="bg-white w-full max-w-sm rounded-[2.5rem] p-8 text-center relative z-10 animate-pop shadow-2xl border border-zinc-100">
+                <button onClick={() => setIsPayOpen(false)} className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-zinc-900 bg-zinc-50 rounded-full"><Icons.Close /></button>
+                
+                {payStatus === 'idle' && (
+                  <>
+                    <h2 className="text-2xl font-black text-zinc-900 mb-6 tracking-tight">ការទូទាត់ប្រាក់</h2>
+                    <div className="bg-zinc-50 p-5 rounded-3xl border border-zinc-100 mb-6">
+                      <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1">ទឹកប្រាក់ត្រូវបង់</p>
+                      <p className="text-4xl font-black text-zinc-900">${total.toFixed(2)}</p>
+                    </div>
+
+                    <button onClick={processPayment} className="w-full bg-white text-zinc-900 flex items-center justify-center gap-3 p-4 rounded-2xl border-2 border-zinc-200 mb-3 active:scale-95 transition-all hover:border-zinc-900">
+                      <Icons.QrCode />
+                      <span className="font-bold text-sm">ទូទាត់តាម KHQR</span>
+                    </button>
+                    
+                    <button onClick={processPayment} className="w-full bg-zinc-900 text-white flex items-center justify-center gap-3 p-4 rounded-2xl shadow-lg active:scale-95 transition-all">
+                      <Icons.Card />
+                      <span className="font-bold text-sm">ទូទាត់តាមកាត</span>
+                    </button>
+                  </>
+                )}
+
+                {payStatus === 'processing' && (
+                  <div className="animate-fade py-6">
+                    <div className="text-red-500 font-black text-2xl tracking-widest mb-6"><span className="bg-red-500 text-white px-2 py-0.5 rounded-lg mr-1">KH</span>QR</div>
+                    <div className="bg-white p-6 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-zinc-100 mb-6 inline-block">
+                       <Icons.QrCode />
+                    </div>
+                    <h3 className="text-3xl font-black text-zinc-900 mb-1 tracking-tight">៛{(total * 4100).toLocaleString()}</h3>
+                    <p className="text-zinc-400 font-bold text-sm mb-8">${total.toFixed(2)} USD</p>
+                    <p className="text-xs font-bold text-zinc-900 animate-pulse bg-zinc-100 py-3 rounded-xl">កំពុងរង់ចាំការស្កេន...</p>
+                  </div>
+                )}
+
+                {payStatus === 'success' && (
+                  <div className="animate-fade py-8">
+                    <div className="w-24 h-24 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Icons.Check size={48} />
+                    </div>
+                    <h3 className="text-2xl font-black text-zinc-900 mb-2 tracking-tight">ការទូទាត់ជោគជ័យ</h3>
+                    <p className="text-sm text-zinc-500 font-medium mb-8">ឧបករណ៍ថ្មីរបស់អ្នកកំពុងត្រូវបានរៀបចំសម្រាប់ការដឹកជញ្ជូន។</p>
+                    <button onClick={() => {setIsPayOpen(false); setPayStatus('idle'); setCart([]); setView('orders');}} className="w-full bg-zinc-900 text-white font-bold py-4 rounded-full active:scale-95 transition-all text-sm shadow-xl">មើលស្ថានភាពការបញ្ជាទិញ</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* FIXED: ADJUSTED BOTTOM NAVIGATION BAR TO NOT GET CUT OFF */}
+          <nav className="fixed bottom-2 left-4 right-4 max-w-[380px] mx-auto h-[64px] glass-pill rounded-[1.5rem] flex items-center justify-around px-2 z-40 shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-white/50 mb-safe">
+            {[
+              { id: 'home', label: 'ហាង', icon: Icons.Home },
+              { id: 'orders', label: 'ប្រវត្តិ', icon: Icons.History },
+              { id: 'favorites', label: 'ចំណូលចិត្ត', icon: Icons.Heart },
+              { id: 'profile', label: 'គណនី', icon: Icons.User }
+            ].map(tab => {
+              const active = view === tab.id;
+              const IconComp = tab.icon;
+              return (
+                <button 
+                  key={tab.id} 
+                  onClick={() => { setView(tab.id); if(tab.id==='home'){setActiveCat('ទាំងអស់'); setQuery('');} }} 
+                  className="flex flex-col items-center justify-center w-16 h-full relative group"
+                >
+                  <div className={`transition-all duration-300 ease-out ${active ? 'text-indigo-600 -translate-y-2' : 'text-zinc-400 group-hover:text-zinc-600'}`}>
+                    <IconComp filled={active} />
+                  </div>
+                  <span className={`absolute bottom-1.5 text-[9px] font-black uppercase tracking-widest transition-all duration-300 ease-out ${active ? 'opacity-100 text-zinc-900 translate-y-0' : 'opacity-0 translate-y-2'}`}>
+                    {tab.label}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      );
+    }
+
+    const initApp = () => {
+      try {
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+        setTimeout(() => {
+          const loader = document.getElementById('loading-screen');
+          if(loader) {
+             loader.style.opacity = '0';
+             setTimeout(() => loader.remove(), 500);
+          }
+        }, 500); 
+      } catch (err) {
+        document.getElementById('loading-screen').innerHTML = `<div style="padding:20px;color:red;text-align:center;">Error: ${err.message}</div>`;
+      }
+    };
+    initApp();
+  </script>
+</body>
+</html>
